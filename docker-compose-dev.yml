@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  app:
+    build: .
+    container_name: app
+    volumes: 
+      - ".:/usr/src/app"
+      - /usr/src/app/node_modules
+    networks:
+      - default
+    ports:
+     - "3000:3000"
+    entrypoint: /bin/bash
+
+networks:
+  default:
+    driver: bridge
