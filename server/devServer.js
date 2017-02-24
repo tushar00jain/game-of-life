@@ -28,7 +28,6 @@ app.use('/static', express.static(path.join(__dirname, '../public')))
 
 // send html file to the client at all routes except `/api/*`
 // client side routing handled by react router
-var clients = {}
 app.get(/^(?!\/api).*$/, (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'))
 })

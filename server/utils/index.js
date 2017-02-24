@@ -8,7 +8,12 @@ module.exports = (function () {
   var methods   = {}
 
   methods.randomColor = function () {
-    return ('#' + ('00000' + (Math.random() * (1<<24)|0).toString(16)).slice(-6))
+    const color = ('#' + ('00000' + (Math.random() * (1<<24)|0).toString(16)).slice(-6))
+    // should not return white color
+    if ( color === '#ffffff' ) {
+      return methods.randomColor()
+    }
+    return color
   }
 
   methods.getColors = function () {
