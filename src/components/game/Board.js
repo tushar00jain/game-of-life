@@ -22,6 +22,13 @@ export default class Board extends Component {
     }
   }
 
+  // this function is bound to Cell component
+  // send position of the click to the server to update the game state
+  handleClick (e) {
+    const { x, y } = this.props
+    socket.emit('client:click', { x, y })
+  }
+
   // update the state of the application when server broadcasts new sate
   componentDidMount () {
     socket.on('server:game', colors => {
@@ -46,6 +53,7 @@ export default class Board extends Component {
           <Cell 
             key={ i + ',' + j }
             fill={ empty ? 'white' : this.state.colors[i][j] }
+            handleClick={ this.handleClick }
             x={ i }
             y={ j }
           />
