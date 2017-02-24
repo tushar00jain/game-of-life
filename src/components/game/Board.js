@@ -13,6 +13,8 @@ const ROWS = 50
     , COLUMNS = 50
     , WIDTH = "500"
     , HEIGHT = "500"
+    , WHITE = 'rgb(255,255,255)'
+    , BLACK = 'rgb(0,0,0)'
 
 export default class Board extends Component {
   constructor(props) {
@@ -54,12 +56,12 @@ export default class Board extends Component {
     const empty = _.isEmpty(this.state.colors[0])
 
     // prepare the array of cells for render
-    for(let i = 0; i < ROWS; i++) {
-      for(let j = 1; j < COLUMNS + 1; j++) {
+    for(let i = 0; i < COLUMNS; i++) {
+      for(let j = 0; j < ROWS; j++) {
         board.push(
           <Cell 
             key={ i + ',' + j }
-            fill={ empty ? '#ffffff' : this.state.colors[i][j] }
+            fill={ empty ? WHITE : this.state.colors[i][j] }
             handleClick={ this.handleClick }
             x={ i }
             y={ j }

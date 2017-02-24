@@ -1,38 +1,38 @@
-module.exports = (function () {
+module.exports = (function (io) {
   'use strict'
-  const path = require('path')
+
+  const path  = require('path')
       , utils = require(path.join(__dirname, '../utils'))
-  
+
   const ROWS    = 50
       , COLUMNS = 50
       , TICK    = 1000
+      , WHITE   = 'rgb(255,255,255)'
+      , BLACK   = 'rgb(0,0,0)'
 
-  // methods to be returned from this file
-  var methods   = {}
+  const CLIENT_CLICK      = 'client:click'
+      , CLIENT_CONNECTION = 'client:connection'
+      , CLIENT_DISCONNECT = 'client:disconnect'
+      , SERVER_GAME       = 'server:game'
 
-  // check if the cell is alive or dead
-  function alive (color) {
-    if (color === '#ffffff') {
-      return false
-    }
-    return true
-  }
+  var gameTimeout 
 
+  // main class for the game
   class Game {
     constructor() {
-      // client id's and their colors
+      // clients connected to the game
       this.clients = {}
-      // colors array that stores the game state
-      // white means dead cell, any other color means alive
-      this.colors = new Array(ROWS)
-      for (let i = 0; i < ROWS; i++) {
-        this.colors[i] = new Array(COLUMNS).fill('#ffffff')
+
+      // colors on the game board
+      this.colors = new Array(COLUMNS)
+      for (let i = 0; i < COLUMNS; i++) {
+        this.colors[i] = new Array(ROWS).fill(WHITE)
       }
 
-      // next generation of colors
-      this.nexts = new Array(ROWS)
-      for (let i = 0; i < ROWS; i++) {
-        this.nexts[i] = new Array(COLUMNS).fill('#ffffff')
+      // next state of the game
+      this.nexts = new Array(COLUMNS)
+      for (let i = 0; i < COLUMNS; i++) {
+        this.nexts[i] = new Array(ROWS).fill(WHITE)
       }
     }
 
@@ -48,6 +48,10 @@ module.exports = (function () {
       this.clients[id] = color
     }
 
+    removeClient (id)  {
+      delete this.clients[id]
+    }
+
     getColors () {
       return this.colors
     }
@@ -57,7 +61,12 @@ module.exports = (function () {
     }
 
     setColor (i, j, color) {
-      this.colors[i][j] = color
+      const tc = this.colors[i][j]
+      if ( tc === WHITE ) {
+        this.colors[i][j] = color
+      } else {
+        this.colors[i][j] = WHITE
+      }
     }
 
     getNexts () {
@@ -71,11 +80,161 @@ module.exports = (function () {
     setNext (i, j, color) {
       this.nexts[i][j] = color
     }
+
+    // update the state of the game
+    update () {
+      this.colors = this.nexts
+      this.nexts = new Array(COLUMNS)
+      for (let i = 0; i < COLUMNS; i++) {
+        this.nexts[i] = new Array(ROWS).fill(WHITE)
+      }
+    }
+
+    // calculate the neighbours of the cell and the average rgb value
+    neighbours (x, y) {
+      let count = 0
+      let colors = []
+
+      let tx = 0
+      let ty = 0
+      let tc = ''
+
+      // 1
+      tx = x - 1 > 0 ? x - 1 : COLUMNS - 1
+      ty = y - 1 > 0 ? y - 1 : ROWS - 1
+      tc = this.colors[tx][ty]
+      if (alive(tc)) {
+        count++
+        colors.push(tc)
+      }
+
+      // 2
+      tc = this.colors[x][ty]
+      if (alive(tc)) {
+        count++
+        colors.push(tc)
+      }
+
+      // 3
+      tc = this.colors[tx][y]
+      if (alive(tc)) {
+        count++
+        colors.push(tc)
+      }
+
+      // 4
+      tx = x + 1 < COLUMNS ? x + 1 : 0
+      tc = this.colors[tx][ty]
+      if (alive(tc)) {
+        count++
+        colors.push(tc)
+      }
+
+      // 5
+      tx = x - 1 > 0 ? x - 1 : COLUMNS - 1
+      ty = y + 1 < ROWS ? y + 1 : 0
+      tc = this.colors[tx][ty]
+      if (alive(tc)) {
+        count++
+        colors.push(tc)
+      }
+
+      // 6
+      tx = x + 1 < COLUMNS ? x + 1 : 0
+      tc = this.colors[tx][ty]
+      if (alive(tc)) {
+        count++
+        colors.push(tc)
+      }
+
+      // 7
+      tc = this.colors[x][ty]
+      if (alive(tc)) {
+        count++
+        colors.push(tc)
+      }
+
+      // 8
+      tc = this.colors[tx][y]
+      if (alive(tc)) {
+        count++
+        colors.push(tc)
+      }
+
+      const average = count === 3 ? utils.average(colors) : ''
+
+      return { count, average }
+    }
+
+  }
+  
+  // check if the cell is  alive, white cells are dead
+  function alive (color) {
+    if (color === WHITE) {
+      return false
+    }
+    return true
   }
 
   var game = new Game()
 
+  // calculate the next state of the game to be rendered
+  // and update reset the game timeout recursively
+  function nextState () {
+    // compute the colors on the board
+    for (let i = 0; i < COLUMNS; i++) {
+      for (let j = 0; j < ROWS; j++) {
 
-  return game
-  // return methods
-})()
+        const color = game.getColor(i, j)
+        const isAlive = alive(color)
+        const { count, average } = game.neighbours(i, j)
+
+        if ((isAlive) && (count < 2)) {
+          game.setNext(i, j, WHITE)
+        } 
+
+        if (isAlive && (count === 2 || count === 3)) {
+          game.setNext(i, j, color)
+        } 
+
+        if (isAlive && (count > 3)) {
+          game.setNext(i, j, WHITE)
+        } 
+
+        if ((isAlive === false) && (count === 3)) {
+          game.setNext(i, j, average)
+        }
+      }
+    }
+
+    // update the game
+    game.update()
+    // broadcast information to all clients
+    io.emit(SERVER_GAME, game.getColors())
+    // reset game timer
+    gameTimeout = setTimeout(nextState, TICK)
+  }
+
+  // initially start the game
+  nextState()
+
+  io.on('connection', socket => {
+    // reset the time if any client clicks and broadcast the click information to all clients
+    socket.on(CLIENT_CLICK, (position) => {
+      clearTimeout(gameTimeout)
+      game.setColor(position.x, position.y, game.getClient(socket.id))
+      io.emit(SERVER_GAME, game.getColors())
+      gameTimeout = setTimeout(nextState, TICK)
+    })
+    
+    // add client with random color to the client list
+    socket.on(CLIENT_CONNECTION, () => {
+      game.setClient(socket.id, utils.randomColor())
+    })
+
+    // remove the client from the list
+    socket.on(CLIENT_DISCONNECT, () => {
+      game.removeClient(socket.id)
+    })
+  })
+})

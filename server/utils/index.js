@@ -1,32 +1,39 @@
 module.exports = (function () {
   'use strict'
+  const _ = require('lodash')
   
-  // methods to be returned from this file
-  const ROWS    = 50
-      , COLUMNS = 50
+  // calculates random number between 0 and 255
+  function randomNumber () {
+    return Math.floor(Math.random() * (256))
+  }
+
+  // extract numbers from string
+  function split (rgb) {
+    return rgb.match(/\d+/g).map(d => parseInt(d))
+  }
 
   var methods   = {}
 
+  // create a random rgb value
   methods.randomColor = function () {
-    const color = ('#' + ('00000' + (Math.random() * (1<<24)|0).toString(16)).slice(-6))
-    // should not return white color
-    if ( color === '#ffffff' ) {
-      return methods.randomColor()
+    var randoms = []
+    for (let i = 0; i < 3; i++) {
+      randoms.push(randomNumber())
     }
-    return color
+
+    const colors = randoms.join(',')
+    return 'rgb(' + colors + ')'
   }
 
-  methods.getColors = function () {
-    var colors = []
-    for (let i = 0; i < ROWS; i++) {
-      let temp = []
-      for (let j = 0; j < COLUMNS; j++) {
-        temp.push(methods.randomColor())
-      }
-      colors.push(temp)
-    }
-    return colors
+  // compute the average of array of rgb values
+  methods.average = function (rgbs) {
+    return 'rgb(' + _.zip.apply(
+      null,
+      rgbs.map(rgb => split(rgb))
+    ).map(
+      d => ~~(d.reduce((acc, curr) => acc + curr, 0) / 3)
+    ).join(',') + ')'
   }
-
+  
   return methods
 })()
