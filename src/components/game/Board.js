@@ -19,7 +19,7 @@ export default class Board extends Component {
     super(props)
     this.state = {
     // application state defined by the color of each cell recieved from the server at a specified latency
-      colors: new Array(ROWS).fill(new Array(COLUMNS).fill('#ffffff'))
+      colors: [[]]
     }
   }
 
@@ -30,8 +30,13 @@ export default class Board extends Component {
     socket.emit('client:click', { x, y })
   }
 
-  // update the state of the application when server broadcasts new sate
+  componentWillMount () {
+  }
+
   componentDidMount () {
+    // get the game state when the component mounts
+    socket.emit('client:connection')
+    // update the state of the application when server broadcasts new sate
     socket.on('server:game', colors => {
       this.setState({ colors })
     })
@@ -39,6 +44,7 @@ export default class Board extends Component {
 
   // remove listener from the socket
   componentWillUnmount () {
+    socket.emit('client:disconnect')
     socket.removeAllListeners('server:game')
   }
 
@@ -53,7 +59,7 @@ export default class Board extends Component {
         board.push(
           <Cell 
             key={ i + ',' + j }
-            fill={ this.state.colors[i][j] }
+            fill={ empty ? '#ffffff' : this.state.colors[i][j] }
             handleClick={ this.handleClick }
             x={ i }
             y={ j }

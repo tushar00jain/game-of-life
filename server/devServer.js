@@ -40,6 +40,7 @@ io.on('connection', socket => {
   })
   
   socket.on('client:connection', () => {
+    socket.emit('server:game', game.getColors())
   })
 
   socket.on('client:disconnect', () => {
