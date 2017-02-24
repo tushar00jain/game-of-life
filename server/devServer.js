@@ -1,9 +1,7 @@
 const path = require('path')
     , config = require(path.join(__dirname, '../webpack.config.dev'))
     , express = require('express')
-    , utils = require(path.join(__dirname, 'utils'))
     , webpack = require('webpack')
-    , bodyParser = require('body-parser')
 
     , compiler = webpack(config)
 
@@ -20,8 +18,6 @@ app.use(require('webpack-dev-middleware')(compiler, {
 
 // middleware
 app.use(require('webpack-hot-middleware')(compiler))
-app.use(bodyParser.json())       
-app.use(bodyParser.urlencoded({extended: true})) 
 app.use('/static', express.static(path.join(__dirname, '../public')))
 
 // send html file to the client at all routes except `/api/*`
