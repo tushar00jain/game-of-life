@@ -5,7 +5,7 @@ module.exports = (function (io) {
       , utils = require(path.join(__dirname, '../utils'))
 
   const ROWS    = 50
-      , COLUMNS = 50
+      , COLUMNS = 100
       , TICK    = 1000
       , WHITE   = 'rgb(255,255,255)'
       , BLACK   = 'rgb(0,0,0)'

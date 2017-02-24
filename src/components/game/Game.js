@@ -9,8 +9,8 @@ import { SERVER } from '../../constants'
 const socket = io(SERVER, { path: '/api/game' }) 
 
 const ROWS = 50
-    , COLUMNS = 50
-    , WIDTH = "500"
+    , COLUMNS = 100
+    , WIDTH = "1000"
     , HEIGHT = "500"
     , WHITE = 'rgb(255,255,255)'
     , BLACK = 'rgb(0,0,0)'
@@ -65,7 +65,7 @@ class Board extends Component {
 
     return (
     <div>
-      <svg height={ WIDTH } width={ HEIGHT }>
+      <svg height={ HEIGHT } width={ WIDTH }>
         <g>
           { board }
         </g>
@@ -98,14 +98,13 @@ export default class Game extends Component {
 
   render () {
     return (
-    <div className="container">
+    <div className="container main">
       <h1>
         Game of Life
       </h1>
       <Board socket = { socket }/>
 
-      <div className="row">
-      <div className="col-sm-2">
+      <div className="patterns">
         <img alt="Game of life block with border.svg"
           src="//upload.wikimedia.org/wikipedia/commons/thumb/9/96/Game_of_life_block_with_border.svg/66px-Game_of_life_block_with_border.svg.png"
           width="66" height="66"
@@ -115,9 +114,7 @@ export default class Game extends Component {
           id="block"
           data-file-height="66">
         </img>
-      </div>
 
-      <div className="col-sm-2">
         <img alt="Game of life blinker.gif"
           src="//upload.wikimedia.org/wikipedia/commons/9/95/Game_of_life_blinker.gif" 
           style={{ cursor: "pointer" }}
@@ -125,16 +122,13 @@ export default class Game extends Component {
           id="blinker"
           width="82" height="82" data-file-width="82" data-file-height="82">
         </img>
-      </div>
 
-      <div className="col-sm-2">
         <img alt="Game of life animated glider.gif" src="//upload.wikimedia.org/wikipedia/commons/f/f2/Game_of_life_animated_glider.gif"
           id="glider"
           style={{ cursor: "pointer" }}
           onClick={ this.handleClick }
           width="84" height="84" data-file-width="84" data-file-height="84">
         </img>
-      </div>
 
     </div>
 

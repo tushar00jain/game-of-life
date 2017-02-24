@@ -21,8 +21,8 @@ export default class Cell extends Component {
         x={ 10 * this.props.x }
         y={ 10 * this.props.y }
         onClick={ this.props.handleClick.bind(this) }
-        stroke="black"
-        strokeWidth="1">
+        stroke="rgb(0,0,0)"
+        strokeWidth="0.3">
       </rect>
     )
   }
