@@ -225,6 +225,7 @@ module.exports = (function (io) {
     return true
   }
 
+  // get random position on the board
   function randomPosition () {
     const x = Math.floor(Math.random() * (COLUMNS))
     const y = Math.floor(Math.random() * (ROWS))
