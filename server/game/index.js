@@ -99,7 +99,7 @@ module.exports = (function (io) {
       let ty = 0
       let tc = ''
 
-      // 1
+      // 1 (0, 0)
       tx = x - 1 > 0 ? x - 1 : COLUMNS - 1
       ty = y - 1 > 0 ? y - 1 : ROWS - 1
       tc = this.colors[tx][ty]
@@ -108,21 +108,21 @@ module.exports = (function (io) {
         colors.push(tc)
       }
 
-      // 2
+      // 2 (1, 0)
       tc = this.colors[x][ty]
       if (alive(tc)) {
         count++
         colors.push(tc)
       }
 
-      // 3
+      // 3 (0, 1)
       tc = this.colors[tx][y]
       if (alive(tc)) {
         count++
         colors.push(tc)
       }
 
-      // 4
+      // 4 (2, 0)
       tx = x + 1 < COLUMNS ? x + 1 : 0
       tc = this.colors[tx][ty]
       if (alive(tc)) {
@@ -130,7 +130,7 @@ module.exports = (function (io) {
         colors.push(tc)
       }
 
-      // 5
+      // 5 (0, 2)
       tx = x - 1 > 0 ? x - 1 : COLUMNS - 1
       ty = y + 1 < ROWS ? y + 1 : 0
       tc = this.colors[tx][ty]
@@ -139,7 +139,7 @@ module.exports = (function (io) {
         colors.push(tc)
       }
 
-      // 6
+      // 6 (2, 2)
       tx = x + 1 < COLUMNS ? x + 1 : 0
       tc = this.colors[tx][ty]
       if (alive(tc)) {
@@ -147,14 +147,14 @@ module.exports = (function (io) {
         colors.push(tc)
       }
 
-      // 7
+      // 7 (1, 2)
       tc = this.colors[x][ty]
       if (alive(tc)) {
         count++
         colors.push(tc)
       }
 
-      // 8
+      // 8 (2, 1)
       tc = this.colors[tx][y]
       if (alive(tc)) {
         count++
@@ -166,6 +166,55 @@ module.exports = (function (io) {
       return { count, average }
     }
 
+    // draw a block pattern
+    block (color) {
+      const { x, y } = randomPosition()
+      this.colors[x][y] = color
+
+      let tx = x + 1 < COLUMNS ? x + 1: 0
+      let ty = y - 1 > 0 ? y - 1 : ROWS - 1
+      this.colors[x][ty] = color
+      this.colors[tx][ty] = color
+
+      this.colors[tx][y] = color
+
+    }
+
+    // draw a blinker pattern
+    blinker (color) {
+      const { x, y } = randomPosition()
+      this.colors[x][y] = color
+
+      let ty = y - 1 > 0 ? y - 1 : ROWS - 1
+      this.colors[x][ty] = color
+
+      ty = y + 1 < ROWS ? y + 1 : 0
+      this.colors[x][ty] = color
+
+    }
+
+    // draw a glider pattern
+    glider (color) {
+      const { x, y } = randomPosition()
+
+      let tx = x - 1 > 0 ? x - 1 : COLUMNS - 1
+      let ty = y - 1 > 0 ? y - 1 : ROWS - 1
+      // 2 (1, 0)
+      this.colors[x][ty] = color
+      // 5 (0, 2)
+      tx = x - 1 > 0 ? x - 1 : COLUMNS - 1
+      ty = y + 1 < ROWS ? y + 1 : 0
+      this.colors[tx][ty] = color
+      // 6 (2, 2)
+      tx = x + 1 < COLUMNS ? x + 1 : 0
+      this.colors[tx][ty] = color
+      // 7 (1, 2)
+      this.colors[x][ty] = color
+      // 8 (2, 1)
+      this.colors[tx][y] = color
+
+    }
+
   }
   
   // check if the cell is  alive, white cells are dead
@@ -174,6 +223,12 @@ module.exports = (function (io) {
       return false
     }
     return true
+  }
+
+  function randomPosition () {
+    const x = Math.floor(Math.random() * (COLUMNS))
+    const y = Math.floor(Math.random() * (ROWS))
+    return { x, y }
   }
 
   var game = new Game()
@@ -226,9 +281,34 @@ module.exports = (function (io) {
       io.emit(SERVER_GAME, game.getColors())
       gameTimeout = setTimeout(nextState, TICK)
     })
+
+    socket.on('client:load:block', () => {
+      clearTimeout(gameTimeout)
+      const color = game.getClient(socket.id)
+      game.block(color)
+      io.emit(SERVER_GAME, game.getColors())
+      gameTimeout = setTimeout(nextState, TICK)
+    })
+
+    socket.on('client:load:blinker', () => {
+      clearTimeout(gameTimeout)
+      const color = game.getClient(socket.id)
+      game.blinker(color)
+      io.emit(SERVER_GAME, game.getColors())
+      gameTimeout = setTimeout(nextState, TICK)
+    })
     
+    socket.on('client:load:glider', () => {
+      clearTimeout(gameTimeout)
+      const color = game.getClient(socket.id)
+      game.glider(color)
+      io.emit(SERVER_GAME, game.getColors())
+      gameTimeout = setTimeout(nextState, TICK)
+    })
+
     // add client with random color to the client list
     socket.on(CLIENT_CONNECTION, () => {
+      clearTimeout(gameTimeout)
       game.setClient(socket.id, utils.randomColor())
     })
 
