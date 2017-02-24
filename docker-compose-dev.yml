@@ -12,7 +12,3 @@ services:
     ports:
      - "3000:3000"
     entrypoint: /bin/bash
-
-networks:
-  default:
-    driver: bridge
