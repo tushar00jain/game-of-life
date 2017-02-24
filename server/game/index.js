@@ -1,27 +1,36 @@
 module.exports = (function () {
   'use strict'
+  const path = require('path')
+      , utils = require(path.join(__dirname, '../utils'))
   
-  // methods to be returned from this file
   const ROWS    = 50
       , COLUMNS = 50
+      , TICK    = 1000
 
+  // methods to be returned from this file
   var methods   = {}
 
-  function randomColor () {
-    return ('#' + ('00000' + (Math.random() * (1<<24)|0).toString(16)).slice(-6))
-  }
-
-  methods.getColors = function () {
-    var colors = []
-    for (let i = 0; i < ROWS; i++) {
-      let temp = []
-      for (let j = 0; j < COLUMNS; j++) {
-        temp.push(randomColor())
-      }
-      colors.push(temp)
+  class Game {
+    constructor() {
+      this.colors = new Array(ROWS).fill(new Array(COLUMNS).fill('#ffffff'))
     }
-    return colors
+
+    getColors() {
+      return this.colors
+    }
+
+    getColor (i, j)  {
+      return this.colors[i][j]
+    }
+
+    setColor (i, j, color) {
+      this.colors[i][j] = color
+    }
   }
 
-  return methods
+  var game = new Game()
+
+
+  return game
+  // return methods
 })()

@@ -7,7 +7,7 @@ module.exports = (function () {
 
   var methods   = {}
 
-  function randomColor () {
+  methods.randomColor = function () {
     return ('#' + ('00000' + (Math.random() * (1<<24)|0).toString(16)).slice(-6))
   }
 
@@ -16,7 +16,7 @@ module.exports = (function () {
     for (let i = 0; i < ROWS; i++) {
       let temp = []
       for (let j = 0; j < COLUMNS; j++) {
-        temp.push(randomColor())
+        temp.push(methods.randomColor())
       }
       colors.push(temp)
     }

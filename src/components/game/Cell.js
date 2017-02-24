@@ -3,22 +3,21 @@ import { Link } from 'react-router'
 
 import _ from 'lodash'
 
+// dimensions of the cell
+const WIDTH = "10"
+    , HEIGHT = "10"
+
 // individual cell that is displayed on the board
 export default class Cell extends Component {
   constructor(props) {
     super(props)
-    // dimensions of the cell
-    this.state = {
-      WIDTH: "10"
-    , HEIGHT: "10"
-    }
   }
 
   render () {
     return (
       <rect
-        width={ this.state.WIDTH }
-        height={ this.state.HEIGHT }
+        width={ WIDTH }
+        height={ HEIGHT }
         fill={ this.props.fill }
         x={ 10 * this.props.x }
         y={ 10 * this.props.y }

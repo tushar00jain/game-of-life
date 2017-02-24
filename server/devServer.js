@@ -1,15 +1,16 @@
-var path = require('path')
-  , config = require(path.join(__dirname, '../webpack.config.dev'))
-  , express = require('express')
-  , utils = require(path.join(__dirname, 'utils'))
-  , webpack = require('webpack')
-  , bodyParser = require('body-parser')
+const path = require('path')
+    , config = require(path.join(__dirname, '../webpack.config.dev'))
+    , express = require('express')
+    , game = require(path.join(__dirname, 'game'))
+    , utils = require(path.join(__dirname, 'utils'))
+    , webpack = require('webpack')
+    , bodyParser = require('body-parser')
 
-  , compiler = webpack(config)
+    , compiler = webpack(config)
 
-  , app = express()
-  , server = require('http').Server(app)
-  , io = require('socket.io').listen(server, { path: '/api/game'})
+    , app = express()
+    , server = require('http').Server(app)
+    , io = require('socket.io').listen(server, { path: '/api/game'})
   
 // webpack
 app.use(require('webpack-dev-middleware')(compiler, {
@@ -34,8 +35,8 @@ app.get(/^(?!\/api).*$/, (req, res) => {
 // socket io
 io.on('connection', socket => {
   socket.on('client:click', (position) => {
-    console.log(position)
-    io.emit('server:game', utils.getColors())
+    game.setColor(position.x, position.y, utils.randomColor())
+    io.emit('server:game', game.getColors())
   })
   
   socket.on('client:connection', () => {
