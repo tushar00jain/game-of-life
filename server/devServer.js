@@ -28,6 +28,7 @@ app.use('/static', express.static(path.join(__dirname, '../public')))
 
 // send html file to the client at all routes except `/api/*`
 // client side routing handled by react router
+var clients = {}
 app.get(/^(?!\/api).*$/, (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'))
 })
@@ -35,11 +36,12 @@ app.get(/^(?!\/api).*$/, (req, res) => {
 // socket io
 io.on('connection', socket => {
   socket.on('client:click', (position) => {
-    game.setColor(position.x, position.y, utils.randomColor())
+    game.setColor(position.x, position.y, game.getClient(socket.id))
     io.emit('server:game', game.getColors())
   })
   
   socket.on('client:connection', () => {
+    game.setClient(socket.id, utils.randomColor())
     socket.emit('server:game', game.getColors())
   })
 

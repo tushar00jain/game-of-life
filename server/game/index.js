@@ -12,6 +12,8 @@ module.exports = (function () {
 
   class Game {
     constructor() {
+      // client id's and their colors
+      this.clients = {}
       // colors array that stores the game state
       this.colors = new Array(ROWS)
       for (let i = 0; i < ROWS; i++) {
@@ -19,7 +21,19 @@ module.exports = (function () {
       }
     }
 
-    getColors() {
+    getClient (id) {
+      return this.clients[id]
+    }
+
+    getClients () {
+      return this.clients
+    }
+
+    setClient (id, color) {
+      this.clients[id] = color
+    }
+
+    getColors () {
       return this.colors
     }
 
