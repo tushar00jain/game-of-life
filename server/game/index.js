@@ -12,7 +12,11 @@ module.exports = (function () {
 
   class Game {
     constructor() {
-      this.colors = new Array(ROWS).fill(new Array(COLUMNS).fill('#ffffff'))
+      // colors array that stores the game state
+      this.colors = new Array(ROWS)
+      for (let i = 0; i < ROWS; i++) {
+        this.colors[i] = new Array(COLUMNS).fill('#ffffff')
+      }
     }
 
     getColors() {
