@@ -4,9 +4,9 @@ import _ from 'lodash'
 import io from 'socket.io-client'
 
 import Cell from './Cell'
-import { SERVER } from '../../constants'
+// import { SERVER } from '../../constants'
 
-const socket = io(SERVER, { path: '/api/game' }) 
+const socket = io('', { path: '/api/game' }) 
 
 const ROWS = 50
     , COLUMNS = 100
