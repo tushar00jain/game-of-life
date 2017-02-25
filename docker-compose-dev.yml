@@ -4,11 +4,11 @@ services:
   app:
     build: .
     container_name: app
+    environment:
+      - PORT: 3000
     volumes: 
       - ".:/usr/src/app"
       - /usr/src/app/node_modules
-    networks:
-      - default
     ports:
      - "3000:3000"
     entrypoint: /bin/bash
