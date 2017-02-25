@@ -311,6 +311,7 @@ module.exports = (function (io) {
     socket.on(CLIENT_CONNECTION, () => {
       clearTimeout(gameTimeout)
       game.setClient(socket.id, utils.randomColor())
+      gameTimeout = setTimeout(nextState, TICK)
     })
 
     // remove the client from the list
