@@ -2,13 +2,15 @@ version: '2'
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-local
     container_name: app
+    environment:
+      PORT: 3000
     volumes: 
       - ".:/usr/src/app"
       - /usr/src/app/node_modules
-    environment:
-      PORT: 3000
     ports:
-     - "${PORT}:3000"
+     - "3000:3000"
     command: npm run serve
