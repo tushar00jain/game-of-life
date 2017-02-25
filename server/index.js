@@ -20,7 +20,7 @@ app.get(/^(?!\/api).*$/, (req, res) => {
 
 // start server
 if (!module.parent) {
-  server.listen(3000, (err) => {
+  server.listen(app.get('port'), (err) => {
     if (err) return console.log(err.message)
     console.log('Listening at port ' + app.get('port'))
   })

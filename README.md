@@ -17,5 +17,5 @@ docker-compose -f docker-compose-dev.yml run --service-ports app
 ```
 Inside the container run:
 ```
-npm run start
+npm run dev
 ```

@@ -6,14 +6,17 @@
     "clean": "rimraf dist",
     "build:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
     "build": "npm run clean && npm run build:webpack",
-    "serve": "node server",
+    "start": "node server",
     "prod": "npm run build && npm run serve",
-    "start": "node server/devServer.js",
+    "dev": "node server/devServer.js",
     "lint": "eslint src"
   },
   "repository": {
     "type": "git",
     "url": "http://github.com/tushar00jain/game-of-life"
+  },
+  "engines": {
+    "node": "7.2.0"
   },
   "keywords": [
     "react",

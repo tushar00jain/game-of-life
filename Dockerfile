@@ -1,9 +1,14 @@
 FROM node:7.2.0
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+RUN mkdir -p /app
+WORKDIR /app
+ENV HOME="/app"
 
-COPY package.json /usr/src/app/
+ENV NODE_ENV production
+
+ADD package.json .
 RUN npm install
 
-CMD ["PORT=$PORT", "npm", "run", "serve"]
+ADD . .
+
+CMD ["npm", "start"]
