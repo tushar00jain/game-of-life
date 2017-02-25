@@ -5,6 +5,12 @@ This is a multiplayer implementation of the Game of Life. This application uses 
   - Run the commands for the development or production version provided below
   - Open your favourite browser at ```http://localhost:3000```
 
+## Heroku Instructions
+```
+heroku create [name]
+git push heroku master
+```
+
 ## Production
 ```
 docker-compose up -d app

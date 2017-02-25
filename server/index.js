@@ -5,10 +5,8 @@ const path = require('path')
     , server = require('http').Server(app)
     , io = require('socket.io').listen(server, { path: '/api/game'})
     , game = require(path.join(__dirname, 'game'))(io)
+    , port = process.env.PORT || 3000 
   
-// set port for the application
-app.set('port', process.env.PORT || 3000)
-
 // middleware
 app.use('/static', express.static(path.join(__dirname, '../public')))
 app.use('/static', express.static(path.join(__dirname, '../build')))
@@ -20,8 +18,8 @@ app.get(/^(?!\/api).*$/, (req, res) => {
 
 // start server
 if (!module.parent) {
-  server.listen(app.get('port'), (err) => {
+  server.listen(port, (err) => {
     if (err) return console.log(err.message)
-    console.log('Listening at port ' + app.get('port'))
+    console.log('Listening at port ' + port)
   })
 }
